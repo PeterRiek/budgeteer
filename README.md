@@ -20,7 +20,7 @@ Budgeteer is a straightforward Flutter Android app designed for effortless manag
 
 1. **Clone the Repository:**
    ```
-   git clone https://github.com/your-username/budgeteer.git
+   git clone https://github.com/PeterRiek/budgeteer.git
    ```
 
 2. **Navigate to the Project Directory:**
