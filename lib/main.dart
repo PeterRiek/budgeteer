@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _tabs = [
     const TabScreenTransactions(),
     const TabScreenChart(),
-    const TabScreenAccount(),
+    const TabScreenProfile(),
   ];
 
   @override
@@ -70,22 +70,40 @@ class _HomePageState extends State<HomePage> {
 }
 
 class DataManager {
-    static Future<List<Transaction>> loadData(String filename) async {
+  static Future<Data> getData(String filename) async {
     final directory = await getApplicationDocumentsDirectory();
-    final String filePath = '${directory.path}/$filename';
-    File file = File(filePath);
-    String data = await file.readAsString();
-    final List<dynamic> jsonData = json.decode(data);
-    return jsonData.map((item) => Transaction.fromJson(item)).toList();
+    final String filepath = '${directory.path}/$filename';
+    File file = File(filepath);
+    String rawdata = await file.readAsString();
+    final Map<String, dynamic> jsonData = json.decode(rawdata);
+    return Data.fromJson(jsonData);
   }
 
-  static Future<void> saveData(String filename, List<Transaction> transactions) async {
+  static Future<List<Transaction>> loadTransactions(String filename) async {
+    Data data = await getData(filename);
+    return data.transactions;
+  }
+
+  static Future<void> saveData(String filename, Data data) async {
     final List<Map<String, dynamic>> jsonList =
-        transactions.map((item) => item.toJson()).toList();
-    final String jsonData = json.encode(jsonList);
+        data.transactions.map((item) => item.toJson()).toList();
+
+    final Map<String, dynamic> jsonData = {
+      'accounts': data.accounts,
+      'transactions': jsonList,
+    };
+    final String jsonString = json.encode(jsonData);
+
     final directory = await getApplicationDocumentsDirectory();
-    final String filePath = '${directory.path}/$filename';
-    print('Saved data\n$jsonData\n[in file: $filePath].');
-    await File(filePath).writeAsString(jsonData);
+    final String filepath = '${directory.path}/$filename';
+    print('Saved data\n$jsonData\n[in file: $filepath].');
+    await File(filepath).writeAsString(jsonString);
+  }
+
+  static Future<void> saveTransactions(
+      String filename, List<Transaction> transactions) async {
+    Data data = await getData(filename);
+    data.transactions = transactions;
+    saveData(filename, data);
   }
 }

@@ -17,12 +17,12 @@ class _TabScreenTransactionsState extends State<TabScreenTransactions> {
   List<Transaction> _transactions = [];
 
   Future<void> _loadData() async {
-    _transactions = await DataManager.loadData(dataFilename);
+    _transactions = await DataManager.loadTransactions(dataFilename);
     setState(() {});
   }
 
   Future<void> _saveData() async {
-    await DataManager.saveData(dataFilename, _transactions);
+    await DataManager.saveTransactions(dataFilename, _transactions);
   }
 
   @override
@@ -245,17 +245,6 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                   child: Text('Date: ${'${_selectedDate.toLocal()}'.split(' ')[0]}'),
                 ),
               ),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.start,
-              //   children: [
-              //     Text('Selected Date:'),
-              //     SizedBox(width: 10),
-              //     ElevatedButton(
-              //       onPressed: () => _selectDate(context),
-              //       child: Text('Date: ${_selectedDate.toLocal()}'.split(' ')[0]),
-              //     ),
-              //   ],
-              // ),
               SizedBox(height: 10),
               Container(
                 decoration: BoxDecoration(
@@ -288,6 +277,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                   ),
                 ),
               ),
+              
             ],
           ),
         ),

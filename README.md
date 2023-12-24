@@ -10,8 +10,6 @@ Budgeteer is a straightforward Flutter Android app designed for effortless manag
 
 - **Income Management:** Log your various sources of income, providing a complete picture of your financial inflows.
 
-- **Budget Planning:** Set budget limits for different categories, and receive notifications when approaching or exceeding them.
-
 - **Multiple Accounts:** Manage multiple accounts, including cash, bank, and more, allowing you to organize your finances based on different sources.
 
 - **No Data Obfuscation:** Your financial data is transparent and accessible. You can use your data without the app, ensuring that you have control over your information.
@@ -44,7 +42,7 @@ Budgeteer is a straightforward Flutter Android app designed for effortless manag
 
 ## Contributing
 
-We welcome contributions from the community. If you have suggestions, found a bug, or want to contribute code, feel free to open an issue or create a pull request.
+I welcome contributions from the community. If you have suggestions, found a bug, or want to contribute code, feel free to open an issue or create a pull request.
 
 ## License
 

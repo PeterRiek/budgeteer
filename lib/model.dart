@@ -1,18 +1,26 @@
+class Data {
+  List<String> accounts;
+  List<Transaction> transactions;
 
-class ListItem {
-  final String title;
-  final String subtitle;
+  Data({
+    required this.accounts,
+    required this.transactions,
+  });
 
-  ListItem({required this.title, required this.subtitle});
-
-  factory ListItem.fromJson(Map<String, dynamic> json) {
-    return ListItem(title: json['title'], subtitle: json['subtitle']);
+  factory Data.fromJson(Map<String, dynamic> json) {
+    return Data(
+      accounts: List<String>.from(json['accounts']),
+      transactions: (json['transactions'] as List<dynamic>)
+          .map((item) => Transaction.fromJson(item))
+          .toList(),
+    );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'title': title,
-      'subtitle': subtitle,
+      'accounts': accounts,
+      'transactions':
+          transactions.map((transaction) => transaction.toJson()).toList(),
     };
   }
 }
