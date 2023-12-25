@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'main.dart';
 import 'model.dart';
 
-const dataFilename = 'data.json';
+const dataFilename = 'dt.json';
 
 class TabScreenTransactions extends StatefulWidget {
   const TabScreenTransactions({super.key});
@@ -45,7 +45,32 @@ class _TabScreenTransactionsState extends State<TabScreenTransactions> {
             child: Card(
               child: ListTile(
                 title: Text(transaction.title),
-                subtitle: Text(transaction.description),
+                subtitle: Text(transaction.date.split(' ')[0]),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize
+                      .min, // NOTE: without this row would kinda overlap complete listtile
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0),
+                          color: Colors.deepPurple[300]),
+                      child: Text(transaction.account),
+                    ),
+                    VerticalDivider(),
+                    Container(
+                      width: 90,
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${transaction.amount.toStringAsFixed(2)} €',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: transaction.amount < 0 ? Colors.red : null,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             onTap: () {
@@ -242,7 +267,8 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                   ),
-                  child: Text('Date: ${'${_selectedDate.toLocal()}'.split(' ')[0]}'),
+                  child: Text(
+                      'Date: ${'${_selectedDate.toLocal()}'.split(' ')[0]}'),
                 ),
               ),
               SizedBox(height: 10),
@@ -277,7 +303,6 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                   ),
                 ),
               ),
-              
             ],
           ),
         ),

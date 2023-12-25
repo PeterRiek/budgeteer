@@ -5,7 +5,7 @@ import 'package:budgeteer/model.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'tab_account.dart';
+import 'tab_profile.dart';
 import 'tab_chart.dart';
 import 'tab_transactions.dart';
 
@@ -74,7 +74,15 @@ class DataManager {
     final directory = await getApplicationDocumentsDirectory();
     final String filepath = '${directory.path}/$filename';
     File file = File(filepath);
+    if (! await file.exists()) {
+      await file.create(recursive: true);
+      await file.writeAsString('{}');
+    }
     String rawdata = await file.readAsString();
+    if (rawdata.isEmpty) {
+      return Data(accounts: [], transactions: []);
+    }
+    print(rawdata);
     final Map<String, dynamic> jsonData = json.decode(rawdata);
     return Data.fromJson(jsonData);
   }
@@ -100,8 +108,7 @@ class DataManager {
     await File(filepath).writeAsString(jsonString);
   }
 
-  static Future<void> saveTransactions(
-      String filename, List<Transaction> transactions) async {
+  static Future<void> saveTransactions(String filename, List<Transaction> transactions) async {
     Data data = await getData(filename);
     data.transactions = transactions;
     saveData(filename, data);
