@@ -92,6 +92,11 @@ class DataManager {
     return data.transactions;
   }
 
+  static Future<List<String>> loadAccounts(String filename) async {
+    Data data = await getData(filename);
+    return data.accounts;
+  }
+
   static Future<void> saveData(String filename, Data data) async {
     final List<Map<String, dynamic>> jsonList =
         data.transactions.map((item) => item.toJson()).toList();
@@ -111,6 +116,12 @@ class DataManager {
   static Future<void> saveTransactions(String filename, List<Transaction> transactions) async {
     Data data = await getData(filename);
     data.transactions = transactions;
+    saveData(filename, data);
+  }
+
+  static Future<void> saveAccounts(String filename, List<String> accounts) async {
+    Data data = await getData(filename);
+    data.accounts = accounts;
     saveData(filename, data);
   }
 }

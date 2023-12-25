@@ -142,13 +142,41 @@ class AddTransactionDialog extends StatefulWidget {
 }
 
 class _AddTransactionDialogState extends State<AddTransactionDialog> {
-  TextEditingController titleController = TextEditingController();
-  TextEditingController descriptionController = TextEditingController();
-  TextEditingController amountController = TextEditingController();
-  TextEditingController tagsController = TextEditingController();
+  late TextEditingController titleController = TextEditingController();
+  late TextEditingController descriptionController = TextEditingController();
+  late TextEditingController amountController = TextEditingController();
+  late TextEditingController tagsController = TextEditingController();
 
-  DateTime _selectedDate = DateTime.now();
-  String _selectedAccount = 'Bargeld'; // TODO: default
+  late DateTime _selectedDate;
+  late List<String> _accountList;
+  late String _selectedAccount;
+
+  @override
+  void initState() {
+    super.initState();
+    titleController = TextEditingController();
+    descriptionController = TextEditingController();
+    amountController = TextEditingController();
+    tagsController = TextEditingController();
+
+    _selectedDate = DateTime.now();
+    _selectedAccount = '';
+    _accountList = [];
+    _loadAccounts();
+  }
+
+  Future<void> _loadAccounts() async {
+    try {
+      _accountList = await DataManager.loadAccounts(dataFilename);
+      _selectedAccount = _accountList.isNotEmpty ? _accountList[0] : '';
+
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (error) {
+      print('Error loading accounts: $error');
+    }
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -225,33 +253,12 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                           _selectedAccount = selectedAccount!;
                         });
                       },
-                      items: [
-                        // TODO: load list
-                        DropdownMenuItem(
-                          value: 'VR Giro',
-                          child: Text('VR Giro'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'DKB Tagesgeld',
-                          child: Text('DKB Tagesgeld'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'DKB Giro',
-                          child: Text('DKB Giro'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'PayPal',
-                          child: Text('PayPal'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Bargeld',
-                          child: Text('Bargeld'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'ABCDEFGHIJKLMNOP',
-                          child: Text('ABCDEFGHIJKLMN'),
-                        ),
-                      ],
+                      items: _accountList.map((String account) {
+                        return DropdownMenuItem(
+                          value: account,
+                          child: Text(account),
+                        );
+                      }).toList(),
                     ),
                   ),
                 ],
@@ -356,6 +363,10 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
   late TextEditingController amountController;
   late TextEditingController tagsController;
 
+  late DateTime _selectedDate;
+  late List<String> _accountList;
+  late String _selectedAccount;
+
   @override
   void initState() {
     super.initState();
@@ -366,32 +377,161 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
         TextEditingController(text: widget.transaction.amount.toString());
     tagsController =
         TextEditingController(text: widget.transaction.tags.join(', '));
+
+    _selectedDate = DateTime.parse(widget.transaction.date);
+    _selectedAccount = '';
+    _accountList = [];
+    _loadAccounts();
+  }
+
+  Future<void> _loadAccounts() async {
+    try {
+      _accountList = await DataManager.loadAccounts(dataFilename);
+      _selectedAccount = _accountList.isNotEmpty ? _accountList[0] : '';
+
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (error) {
+      print('Error loading accounts: $error');
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Edit Transaction'),
-      content: Column(
-        children: [
-          TextField(
-            controller: titleController,
-            decoration: InputDecoration(labelText: 'Title'),
+      title: Text('Add Transaction'),
+      content: Container(
+        width: 300,
+        height: 350,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: TextField(
+                  controller: titleController,
+                  decoration: InputDecoration(
+                    labelText: 'Title',
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.all(8.0),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: TextField(
+                        controller: amountController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: 'Amount',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.all(8.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: DropdownButton<String>(
+                      padding: EdgeInsets.all(4.0),
+                      alignment: Alignment.center,
+                      underline: SizedBox(),
+                      value: _selectedAccount,
+                      onChanged: (String? selectedAccount) {
+                        setState(() {
+                          _selectedAccount = selectedAccount!;
+                        });
+                      },
+                      items: _accountList.map((String account) {
+                        return DropdownMenuItem(
+                          value: account,
+                          child: Text(account),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              SizedBox(
+                width: 300,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () => _selectDate(context),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  child: Text(
+                      'Date: ${'${_selectedDate.toLocal()}'.split(' ')[0]}'),
+                ),
+              ),
+              SizedBox(height: 10),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: TextField(
+                  controller: tagsController,
+                  decoration: InputDecoration(
+                    labelText: 'Tags (comma-separated)',
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.all(8.0),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: TextField(
+                  controller: descriptionController,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.all(8.0),
+                  ),
+                ),
+              ),
+            ],
           ),
-          TextField(
-            controller: descriptionController,
-            decoration: InputDecoration(labelText: 'Description'),
-          ),
-          TextField(
-            controller: amountController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: 'Amount'),
-          ),
-          TextField(
-            controller: tagsController,
-            decoration: InputDecoration(labelText: 'Tags (comma-separated)'),
-          ),
-        ],
+        ),
       ),
       actions: [
         TextButton(
@@ -403,13 +543,13 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
         TextButton(
           onPressed: () {
             widget.onSave(Transaction(
-              account: widget.transaction.account,
+              account: _selectedAccount,
               amount: double.tryParse(amountController.text) ?? 0,
               title: titleController.text,
               description: descriptionController.text,
               tags:
                   tagsController.text.split(',').map((e) => e.trim()).toList(),
-              date: widget.transaction.date,
+              date: DateTime.now().toString(),
             ));
             Navigator.pop(context);
           },
