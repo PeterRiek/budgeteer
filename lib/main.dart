@@ -76,15 +76,20 @@ class DataManager {
     File file = File(filepath);
     if (! await file.exists()) {
       await file.create(recursive: true);
-      await file.writeAsString('{}');
+      await file.writeAsString('{"transactions":[], "accounts":[]}');
     }
     String rawdata = await file.readAsString();
     if (rawdata.isEmpty) {
       return Data(accounts: [], transactions: []);
     }
     print(rawdata);
-    final Map<String, dynamic> jsonData = json.decode(rawdata);
-    return Data.fromJson(jsonData);
+    try {
+      final Map<String, dynamic> jsonData = json.decode(rawdata);
+      return Data.fromJson(jsonData);
+    } catch(e) {
+      print('File malformatted. Error while loading data: $e');
+      return Data(accounts: [], transactions: []);
+    }
   }
 
   static Future<List<Transaction>> loadTransactions(String filename) async {
