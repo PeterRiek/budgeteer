@@ -314,8 +314,9 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                             hintText:
                                 tagsController.hasTags ? '' : 'Enter tag...',
                             errorText: error,
-                            prefixIconConstraints:
-                                BoxConstraints(maxWidth: _tagsFieldDist * 0.74),
+                            prefixIconConstraints: BoxConstraints(
+                                maxWidth: _tagsFieldDist *
+                                    (fn.hasFocus ? 0.40 : 0.57)),
                             prefixIcon: SingleChildScrollView(
                               controller: sc,
                               scrollDirection: Axis.horizontal,
@@ -327,11 +328,11 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),
                                     margin: const EdgeInsets.symmetric(
-                                      horizontal: 5.0,
+                                      horizontal: 2.0,
                                     ),
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 10.0,
-                                      vertical: 5.0,
+                                      horizontal: 4.0,
+                                      vertical: 4.0,
                                     ),
                                     child: Row(
                                       mainAxisAlignment:
@@ -600,13 +601,14 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                           focusNode: fn,
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            contentPadding: EdgeInsets.all(8.0),
+                            contentPadding: EdgeInsets.all(0.0),
                             isDense: true,
                             hintText:
                                 tagsController.hasTags ? '' : 'Enter tag...',
                             errorText: error,
-                            prefixIconConstraints:
-                                BoxConstraints(maxWidth: _tagsFieldDist * 0.74),
+                            prefixIconConstraints: BoxConstraints(
+                                maxWidth: _tagsFieldDist *
+                                    (fn.hasFocus ? 0.40 : 0.57)),
                             prefixIcon: SingleChildScrollView(
                               controller: sc,
                               scrollDirection: Axis.horizontal,
@@ -618,11 +620,11 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),
                                     margin: const EdgeInsets.symmetric(
-                                      horizontal: 5.0,
+                                      horizontal: 2.0,
                                     ),
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 10.0,
-                                      vertical: 5.0,
+                                      horizontal: 4.0,
+                                      vertical: 4.0,
                                     ),
                                     child: Row(
                                       mainAxisAlignment:
