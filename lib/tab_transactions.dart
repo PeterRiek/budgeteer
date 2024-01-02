@@ -1,6 +1,7 @@
+import 'package:budgeteer/main.dart';
 import 'package:flutter/material.dart';
+import 'package:textfield_tags/textfield_tags.dart';
 
-import 'main.dart';
 import 'model.dart';
 
 const dataFilename = 'dt.json';
@@ -145,11 +146,19 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
   late TextEditingController titleController = TextEditingController();
   late TextEditingController descriptionController = TextEditingController();
   late TextEditingController amountController = TextEditingController();
-  late TextEditingController tagsController = TextEditingController();
+  late TextfieldTagsController tagsController = TextfieldTagsController();
 
   late DateTime _selectedDate;
   late List<String> _accountList;
   late String _selectedAccount;
+  late List<String> _tagList;
+  late double _tagsFieldDist;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _tagsFieldDist = MediaQuery.of(context).size.width;
+  }
 
   @override
   void initState() {
@@ -157,11 +166,12 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
     titleController = TextEditingController();
     descriptionController = TextEditingController();
     amountController = TextEditingController();
-    tagsController = TextEditingController();
+    tagsController = TextfieldTagsController();
 
     _selectedDate = DateTime.now();
     _selectedAccount = '';
     _accountList = [];
+    _tagList = [];
     _loadAccounts();
   }
 
@@ -284,12 +294,77 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                   border: Border.all(),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: TextField(
-                  controller: tagsController,
-                  decoration: InputDecoration(
-                    labelText: 'Tags (comma-separated)',
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(10),
+                child: Center(
+                  child: TextFieldTags(
+                    textfieldTagsController: tagsController,
+                    initialTags: _tagList,
+                    textSeparators: const [' ', ','],
+                    letterCase: LetterCase.normal,
+                    inputfieldBuilder:
+                        (context, tec, fn, error, onChanged, onSubmitted) {
+                      return ((context, sc, tags, onTagDelete) {
+                        return TextField(
+                          controller: tec,
+                          focusNode: fn,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.all(8.0),
+                            isDense: true,
+                            hintText:
+                                tagsController.hasTags ? '' : 'Enter tag...',
+                            errorText: error,
+                            prefixIconConstraints:
+                                BoxConstraints(maxWidth: _tagsFieldDist * 0.74),
+                            prefixIcon: SingleChildScrollView(
+                              controller: sc,
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: tags.map((String tag) {
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 5.0,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0,
+                                      vertical: 5.0,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        InkWell(
+                                          child: Text('$tag'),
+                                          onTap: () {
+                                            print('$tag selected');
+                                          },
+                                        ),
+                                        const SizedBox(width: 4.0),
+                                        InkWell(
+                                          child: const Icon(
+                                            Icons.cancel_outlined,
+                                            size: 20.0,
+                                          ),
+                                          onTap: () {
+                                            onTagDelete(tag);
+                                          },
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                          onChanged: onChanged,
+                          onSubmitted: onSubmitted,
+                        );
+                      });
+                    },
                   ),
                 ),
               ),
@@ -328,8 +403,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
               amount: double.tryParse(amountController.text) ?? 0,
               title: titleController.text,
               description: descriptionController.text,
-              tags:
-                  tagsController.text.split(',').map((e) => e.trim()).toList(),
+              tags: tagsController.getTags!,
               date: DateTime.now().toString(),
             ));
             Navigator.pop(context);
@@ -361,11 +435,19 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
   late TextEditingController titleController;
   late TextEditingController descriptionController;
   late TextEditingController amountController;
-  late TextEditingController tagsController;
+  late TextfieldTagsController tagsController;
 
   late DateTime _selectedDate;
   late List<String> _accountList;
   late String _selectedAccount;
+  late List<String> _tagList;
+  late double _tagsFieldDist;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _tagsFieldDist = MediaQuery.of(context).size.width;
+  }
 
   @override
   void initState() {
@@ -375,12 +457,12 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
         TextEditingController(text: widget.transaction.description);
     amountController =
         TextEditingController(text: widget.transaction.amount.toString());
-    tagsController =
-        TextEditingController(text: widget.transaction.tags.join(', '));
+    tagsController = TextfieldTagsController();
 
     _selectedDate = DateTime.parse(widget.transaction.date);
     _selectedAccount = '';
     _accountList = [];
+    _tagList = widget.transaction.tags;
     _loadAccounts();
   }
 
@@ -503,12 +585,77 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                   border: Border.all(),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: TextField(
-                  controller: tagsController,
-                  decoration: InputDecoration(
-                    labelText: 'Tags (comma-separated)',
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(10),
+                child: Center(
+                  child: TextFieldTags(
+                    textfieldTagsController: tagsController,
+                    initialTags: _tagList,
+                    textSeparators: const [' ', ','],
+                    letterCase: LetterCase.normal,
+                    inputfieldBuilder:
+                        (context, tec, fn, error, onChanged, onSubmitted) {
+                      return ((context, sc, tags, onTagDelete) {
+                        return TextField(
+                          controller: tec,
+                          focusNode: fn,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.all(8.0),
+                            isDense: true,
+                            hintText:
+                                tagsController.hasTags ? '' : 'Enter tag...',
+                            errorText: error,
+                            prefixIconConstraints:
+                                BoxConstraints(maxWidth: _tagsFieldDist * 0.74),
+                            prefixIcon: SingleChildScrollView(
+                              controller: sc,
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: tags.map((String tag) {
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 5.0,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0,
+                                      vertical: 5.0,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        InkWell(
+                                          child: Text('$tag'),
+                                          onTap: () {
+                                            print('$tag selected');
+                                          },
+                                        ),
+                                        const SizedBox(width: 4.0),
+                                        InkWell(
+                                          child: const Icon(
+                                            Icons.cancel_outlined,
+                                            size: 20.0,
+                                          ),
+                                          onTap: () {
+                                            onTagDelete(tag);
+                                          },
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                          onChanged: onChanged,
+                          onSubmitted: onSubmitted,
+                        );
+                      });
+                    },
                   ),
                 ),
               ),
@@ -547,8 +694,7 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
               amount: double.tryParse(amountController.text) ?? 0,
               title: titleController.text,
               description: descriptionController.text,
-              tags:
-                  tagsController.text.split(',').map((e) => e.trim()).toList(),
+              tags: tagsController.getTags!,
               date: DateTime.now().toString(),
             ));
             Navigator.pop(context);
