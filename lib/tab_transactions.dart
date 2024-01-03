@@ -1,8 +1,8 @@
 import 'package:budgeteer/main.dart';
+import 'package:budgeteer/model.dart';
 import 'package:flutter/material.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
-import 'model.dart';
 
 const dataFilename = 'dt.json';
 
