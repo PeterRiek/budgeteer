@@ -1,10 +1,7 @@
 import 'package:budgeteer/main.dart';
-import 'package:budgeteer/model.dart';
 import 'package:flutter/material.dart';
-import 'package:textfield_tags/textfield_tags.dart';
 
 const dataFilename = 'dt.json';
-
 
 class Util {
   static void showPopupMessage(BuildContext context, String message) {
@@ -38,7 +35,7 @@ class _TabScreenAccountsState extends State<TabScreenAccounts> {
 
   Future<void> _loadAccounts() async {
     _accountList = await DataManager.loadAccounts(dataFilename);
-    _loadBalances();
+    await _loadBalances();
     setState(() {});
   }
 
@@ -52,7 +49,8 @@ class _TabScreenAccountsState extends State<TabScreenAccounts> {
         builder: (context) {
           return AddAccountDialog(onSave: (account) {
             if (_accountList.contains(account)) {
-              Util.showPopupMessage(context, 'An account with that name already exists!');
+              Util.showPopupMessage(
+                  context, 'An account with that name already exists!');
               return -1;
             }
             setState(() {
@@ -70,9 +68,10 @@ class _TabScreenAccountsState extends State<TabScreenAccounts> {
         return EditAccountDialog(
           account: _accountList[index],
           onSave: (account) {
-            if (account ==  _accountList[index]) return;
+            if (account == _accountList[index]) return;
             if (_accountList.contains(account)) {
-              Util.showPopupMessage(context, 'An account with that name already exists!');
+              Util.showPopupMessage(
+                  context, 'An account with that name already exists!');
               return;
             }
             setState(() {
@@ -159,8 +158,16 @@ class _AddAccountDialogState extends State<AddAccountDialog> {
       title: Text('Add Account'),
       content: Container(
         width: 300,
-        height: 200,
+        decoration: BoxDecoration(
+          border: Border.all(),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
         child: TextField(
+          decoration: InputDecoration(
+            labelText: 'Account name',
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.all(8.0),
+          ),
           controller: accountNameController,
         ),
       ),
@@ -214,8 +221,16 @@ class _EditAccountDialogState extends State<EditAccountDialog> {
       title: Text('Edit Account'),
       content: Container(
         width: 300,
-        height: 200,
+        decoration: BoxDecoration(
+          border: Border.all(),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
         child: TextField(
+          decoration: InputDecoration(
+            labelText: 'Account name',
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.all(8.0),
+          ),
           controller: accountNameController,
         ),
       ),
