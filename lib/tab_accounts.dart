@@ -70,6 +70,7 @@ class _TabScreenAccountsState extends State<TabScreenAccounts> {
         return EditAccountDialog(
           account: _accountList[index],
           onSave: (account) {
+            if (account ==  _accountList[index]) return;
             if (_accountList.contains(account)) {
               Util.showPopupMessage(context, 'An account with that name already exists!');
               return;

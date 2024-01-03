@@ -685,6 +685,14 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
       actions: [
         TextButton(
           onPressed: () {
+            widget.onDelete();
+            Navigator.pop(context);
+          },
+          style: TextButton.styleFrom(foregroundColor: Colors.red),
+          child: Text('Delete'),
+        ),
+        TextButton(
+          onPressed: () {
             Navigator.pop(context);
           },
           child: Text('Cancel'),
@@ -702,14 +710,6 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
             Navigator.pop(context);
           },
           child: Text('Save'),
-        ),
-        TextButton(
-          onPressed: () {
-            widget.onDelete();
-            Navigator.pop(context);
-          },
-          style: TextButton.styleFrom(foregroundColor: Colors.red),
-          child: Text('Delete'),
         ),
       ],
     );

@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_box),
-            label: 'Profile',
+            label: 'Accounts',
           )
         ],
       ),
