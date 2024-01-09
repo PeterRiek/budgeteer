@@ -405,7 +405,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
               title: titleController.text,
               description: descriptionController.text,
               tags: tagsController.getTags!,
-              date: DateTime.now().toString(),
+              date: _selectedDate.toString(),
             ));
             Navigator.pop(context);
           },
@@ -705,7 +705,7 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
               title: titleController.text,
               description: descriptionController.text,
               tags: tagsController.getTags!,
-              date: DateTime.now().toString(),
+              date: _selectedDate.toString(),
             ));
             Navigator.pop(context);
           },
